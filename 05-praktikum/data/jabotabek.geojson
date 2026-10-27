@@ -1,0 +1,101 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.827168,
+                    -6.175405
+                ]
+            },
+            "properties": {
+                "label": "Jakarta - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 10677.975,
+                "luas_km2": 662.33
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.7994,
+                    -6.5971
+                ]
+            },
+            "properties": {
+                "label": "Kota Bogor - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 1078.35,
+                "luas_km2": 111.39
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6319,
+                    -6.1702
+                ]
+            },
+            "properties": {
+                "label": "Kota Tangerang - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 1963.97,
+                "luas_km2": 164.55
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.6689,
+                    -6.2886
+                ]
+            },
+            "properties": {
+                "label": "Tangerang Selatan - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 1429.5,
+                "luas_km2": 164.86
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    106.831,
+                    -6.4025
+                ]
+            },
+            "properties": {
+                "label": "Kota Depok - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 2163.64,
+                "luas_km2": 200.29
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    107.0007,
+                    -6.2383
+                ]
+            },
+            "properties": {
+                "label": "Kota Bekasi - Indonesia",
+                "tahun": 2024,
+                "penduduk_ribu": 2644.058,
+                "luas_km2": 213.04
+            }
+        }
+    ]
+}
