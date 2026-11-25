@@ -19,12 +19,13 @@ Repositori ini berisi kumpulan tugas, dataset spasial, modul praktikum, dan apli
 | **Praktikum 5** | Pembuatan Data GeoJSON & Manajemen Attribute Table QGIS | [Lihat Modul 5](./05-praktikum) |
 | **Praktikum 6** | Pembuatan Peta Tematik (Choropleth) & Kalkulasi Matematis Spasial | [Lihat Modul 6](./06-praktikum) |
 | **Praktikum 7** | WebGIS Fullstack dengan Python Web Django Framework & Leaflet.js | [Lihat Modul 7](./07-praktikum-django-web-framework) |
+| **Praktikum 8** | Visualisasi Peta Interaktif Berbasis Web dengan Leaflet.js & GeoJSON | [Lihat Modul 8](./08-praktikum-leaflet-js) |
 
 ## Teknologi & Format Data yang Digunakan
-- **Tools & Framework Utama:** Google Maps, Google My Maps, Quantum GIS (QGIS), Python 3.11+, Django Framework 5.2, Leaflet.js, OpenStreetMap API, BMKG Live Earthquake API.
+- **Tools & Framework Utama:** Google Maps, Google My Maps, Quantum GIS (QGIS), Python 3.11+, Django Framework 5.2, Leaflet.js 1.9.4, OpenStreetMap API, CartoDB Tile Provider, BMKG Live Earthquake API.
 - **Data Geografis:** 
   - `.csv` (Data Tabular Koordinat Titik)
   - `.kml` (Data Spasial Vektor / Polygon Web)
-  - `.geojson` / `.json` (Format Spasial Berbasis JavaScript Object Notation)
+  - `.geojson` / `.json` (Format Spasial & Data Non-Spasial Berbasis JavaScript Object Notation)
   - `.shp` (Kumpulan format persistensi basis data spasial ESRI Shapefile)
 - **Version Control:** Git & GitHub
