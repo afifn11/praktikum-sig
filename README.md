@@ -1,6 +1,6 @@
 # Praktikum Sistem Informasi Geografis (SIG)
 
-Repositori ini berisi kumpulan tugas, dataset spasial, dan laporan hasil praktikum mata kuliah **Sistem Informasi Geografis (SIG)** menggunakan *platform* pemetaan berbasis web (Google Maps, Google My Maps) dan perangkat lunak SIG *desktop* profesional (Quantum GIS).
+Repositori ini berisi kumpulan tugas, dataset spasial, modul praktikum, dan aplikasi pemetaan geospasial berbasis web yang dikembangkan menggunakan *platform* pemetaan web (Google Maps, Google My Maps), perangkat lunak SIG *desktop* profesional (Quantum GIS), serta *web framework* **Python Django**.
 
 ## Identitas Mahasiswa
 - **Nama:** Muhammad Afif Naufal
@@ -18,13 +18,13 @@ Repositori ini berisi kumpulan tugas, dataset spasial, dan laporan hasil praktik
 | **Praktikum 4** | Pengenalan Quantum GIS (QGIS) & Konversi Format ESRI Shapefile | [Lihat Modul 4](./04-praktikum) |
 | **Praktikum 5** | Pembuatan Data GeoJSON & Manajemen Attribute Table QGIS | [Lihat Modul 5](./05-praktikum) |
 | **Praktikum 6** | Pembuatan Peta Tematik (Choropleth) & Kalkulasi Matematis Spasial | [Lihat Modul 6](./06-praktikum) |
-| **Proyek UTS** | Peta Tematik Komposisi Perkebunan & Demografi Provinsi Sumatera Selatan (14 Kab/Kota) | [Lihat Proyek UTS](./uts-sig) |
+| **Praktikum 7** | WebGIS Fullstack dengan Python Web Django Framework & Leaflet.js | [Lihat Modul 7](./07-praktikum-django-web-framework) |
 
 ## Teknologi & Format Data yang Digunakan
-- **Tools Utama:** Google Maps, Google My Maps, Quantum GIS (QGIS)
+- **Tools & Framework Utama:** Google Maps, Google My Maps, Quantum GIS (QGIS), Python 3.11+, Django Framework 5.2, Leaflet.js, OpenStreetMap API, BMKG Live Earthquake API.
 - **Data Geografis:** 
   - `.csv` (Data Tabular Koordinat Titik)
   - `.kml` (Data Spasial Vektor / Polygon Web)
-  - `.geojson` (Format Spasial Berbasis JavaScript Object Notation)
+  - `.geojson` / `.json` (Format Spasial Berbasis JavaScript Object Notation)
   - `.shp` (Kumpulan format persistensi basis data spasial ESRI Shapefile)
 - **Version Control:** Git & GitHub
