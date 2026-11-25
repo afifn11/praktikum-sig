@@ -18,6 +18,7 @@ Repositori ini berisi kumpulan tugas, dataset spasial, dan laporan hasil praktik
 | **Praktikum 4** | Pengenalan Quantum GIS (QGIS) & Konversi Format ESRI Shapefile | [Lihat Modul 4](./04-praktikum) |
 | **Praktikum 5** | Pembuatan Data GeoJSON & Manajemen Attribute Table QGIS | [Lihat Modul 5](./05-praktikum) |
 | **Praktikum 6** | Pembuatan Peta Tematik (Choropleth) & Kalkulasi Matematis Spasial | [Lihat Modul 6](./06-praktikum) |
+| **Proyek UTS** | Peta Tematik Komposisi Perkebunan & Demografi Provinsi Sumatera Selatan (14 Kab/Kota) | [Lihat Proyek UTS](./uts-sig) |
 
 ## Teknologi & Format Data yang Digunakan
 - **Tools Utama:** Google Maps, Google My Maps, Quantum GIS (QGIS)

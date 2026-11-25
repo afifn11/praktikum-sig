@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gempabumi Terkini M 5.0+ - BMKG</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: #991b1b;
+            color: #fff;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-size: 1.2rem; font-weight: 600; }
+        nav a {
+            color: #fee2e2;
+            text-decoration: none;
+            margin-left: 16px;
+            font-size: 0.9rem;
+        }
+        nav a:hover { color: #fff; text-decoration: underline; }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 380px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafafa;
+        }
+        .sidebar-header h2 {
+            font-size: 1rem;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .legend {
+            display: flex;
+            gap: 12px;
+            font-size: 0.78rem;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot.red { background: #ef4444; }
+        .dot.orange { background: #f97316; }
+        .dot.green { background: #22c55e; }
+        .quake-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .quake-card {
+            border: 1px solid #e5e7eb;
+            border-left: 5px solid #9ca3af;
+            border-radius: 8px;
+            padding: 12px;
+            background: #ffffff;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+        .quake-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .quake-card.red { border-left-color: #ef4444; }
+        .quake-card.orange { border-left-color: #f97316; }
+        .quake-card.green { border-left-color: #22c55e; }
+        .quake-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .mag-badge {
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            color: #fff;
+        }
+        .mag-badge.red { background: #ef4444; }
+        .mag-badge.orange { background: #f97316; }
+        .mag-badge.green { background: #22c55e; }
+        .quake-time {
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+        .quake-loc {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .quake-meta {
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+        .error-box {
+            margin: 16px;
+            padding: 12px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gempabumi M 5.0+ Real-time (BMKG)</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/petasatu/">Peta Satu</a>
+            <a href="/petadua/">Peta Dua (Jabodetabek)</a>
+            <a href="/gempabumi/">Gempabumi BMKG</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>15 Gempabumi Terkini</h2>
+                <div class="legend">
+                    <span class="legend-item"><span class="dot red"></span> Dangkal (&lt;70 km)</span>
+                    <span class="legend-item"><span class="dot orange"></span> Menengah (70-300 km)</span>
+                    <span class="legend-item"><span class="dot green"></span> Dalam (&gt;300 km)</span>
+                </div>
+            </div>
+
+            {% if error_message %}
+            <div class="error-box">{{ error_message }}</div>
+            {% endif %}
+
+            <div class="quake-list">
+                {% for q in earthquakes %}
+                <div class="quake-card {{ q.color }}" onclick="focusQuake({{ q.id }})">
+                    <div class="quake-top">
+                        <span class="mag-badge {{ q.color }}">M {{ q.magnitude }}</span>
+                        <span class="quake-time">{{ q.tanggal }} • {{ q.jam }}</span>
+                    </div>
+                    <div class="quake-loc">{{ q.wilayah }}</div>
+                    <div class="quake-meta">
+                        Kedalaman: <strong>{{ q.kedalaman }}</strong> ({{ q.depth_category }})<br>
+                        {{ q.potensi }}
+                    </div>
+                </div>
+                {% empty %}
+                {% if not error_message %}
+                <p style="color:#6b7280; font-size:0.9rem;">Tidak ada data gempabumi tersedia.</p>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        const earthquakes = {{ earthquakes_json|safe }};
+
+        const map = L.map('map').setView([-2.5489, 118.0149], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.control.scale({ metric: true, imperial: false }).addTo(map);
+
+        const colorHex = {
+            red: '#ef4444',
+            orange: '#f97316',
+            green: '#22c55e',
+            gray: '#6b7280'
+        };
+
+        const markersById = {};
+
+        earthquakes.forEach(q => {
+            const hex = colorHex[q.color] || '#6b7280';
+            const radius = Math.max(7, parseFloat(q.magnitude) * 2.2 || 8);
+
+            const marker = L.circleMarker([q.lat, q.lng], {
+                radius: radius,
+                color: '#ffffff',
+                weight: 1.5,
+                fillColor: hex,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            marker.bindPopup(`
+                <strong>M ${q.magnitude} - ${q.wilayah}</strong><br>
+                <b>Waktu:</b> ${q.tanggal} ${q.jam}<br>
+                <b>Kedalaman:</b> ${q.kedalaman} (${q.depth_category})<br>
+                <b>Potensi:</b> ${q.potensi}
+            `);
+
+            markersById[q.id] = marker;
+        });
+
+        function focusQuake(id) {
+            const marker = markersById[id];
+            if (!marker) return;
+            map.flyTo(marker.getLatLng(), 7, { duration: 0.7 });
+            marker.openPopup();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Dua - Peta Interaktif Jabodetabek</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: #1e3a8a;
+            color: #fff;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { font-size: 1.2rem; font-weight: 600; }
+        nav a {
+            color: #dbeafe;
+            text-decoration: none;
+            margin-left: 16px;
+            font-size: 0.9rem;
+        }
+        nav a:hover { color: #fff; text-decoration: underline; }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .sidebar h2 {
+            font-size: 1.05rem;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+        .sidebar p {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .city-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .city-btn:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        .city-btn.active {
+            background: #1e3a8a;
+            color: #ffffff;
+            border-color: #1e3a8a;
+        }
+        .city-btn .city-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .city-btn .city-desc {
+            font-size: 0.78rem;
+            opacity: 0.85;
+            margin-top: 2px;
+        }
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Peta Interaktif Jabodetabek - Modul 1 (Peta Dua)</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/petasatu/">Peta Satu</a>
+            <a href="/petadua/">Peta Dua (Jabodetabek)</a>
+            <a href="/gempabumi/">Gempabumi BMKG</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Filter Wilayah Jabodetabek</h2>
+            <p>Pilih wilayah untuk memfokuskan peta atau tampilkan seluruh Jabodetabek.</p>
+
+            <button class="city-btn active" onclick="showAll(this)">
+                <span class="city-name">Semua Wilayah Jabodetabek</span>
+                <span class="city-desc">Tampilkan seluruh 5 kota utama</span>
+            </button>
+            <button class="city-btn" onclick="focusCity('Jakarta', this)">
+                <span class="city-name">Jakarta</span>
+                <span class="city-desc">DKI Jakarta (-6.2088, 106.8456)</span>
+            </button>
+            <button class="city-btn" onclick="focusCity('Bogor', this)">
+                <span class="city-name">Bogor</span>
+                <span class="city-desc">Kota Hujan (-6.5971, 106.8060)</span>
+            </button>
+            <button class="city-btn" onclick="focusCity('Depok', this)">
+                <span class="city-name">Depok</span>
+                <span class="city-desc">Kota Belimbing (-6.4025, 106.7942)</span>
+            </button>
+            <button class="city-btn" onclick="focusCity('Tangerang', this)">
+                <span class="city-name">Tangerang</span>
+                <span class="city-desc">Kota Benteng (-6.1783, 106.6319)</span>
+            </button>
+            <button class="city-btn" onclick="focusCity('Bekasi', this)">
+                <span class="city-name">Bekasi</span>
+                <span class="city-desc">Kota Patriot (-6.2383, 106.9756)</span>
+            </button>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        const cities = [
+            { name: 'Jakarta', lat: -6.2088, lng: 106.8456, desc: 'Ibu Kota Negara & Pusat Pemerintahan' },
+            { name: 'Bogor', lat: -6.5971, lng: 106.8060, desc: 'Kota Hujan & Kebun Raya Bogor' },
+            { name: 'Depok', lat: -6.4025, lng: 106.7942, desc: 'Kota Pendidikan (Universitas Indonesia)' },
+            { name: 'Tangerang', lat: -6.1783, lng: 106.6319, desc: 'Kawasan Industri & Bandara Soekarno-Hatta' },
+            { name: 'Bekasi', lat: -6.2383, lng: 106.9756, desc: 'Kota Patriot & Kawasan Industri Timur' }
+        ];
+
+        const map = L.map('map').setView([-6.32, 106.82], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.control.scale({ metric: true, imperial: false }).addTo(map);
+
+        const markers = {};
+        const markerGroup = L.layerGroup().addTo(map);
+
+        cities.forEach(city => {
+            const marker = L.marker([city.lat, city.lng])
+                .bindPopup(`<strong>${city.name}</strong><br>${city.desc}<br><small>Koordinat: ${city.lat}, ${city.lng}</small>`);
+            marker.addTo(markerGroup);
+            markers[city.name] = { marker, data: city };
+        });
+
+        function setActiveButton(btn) {
+            document.querySelectorAll('.city-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        function showAll(btn) {
+            setActiveButton(btn);
+            markerGroup.clearLayers();
+            Object.values(markers).forEach(item => item.marker.addTo(markerGroup));
+            map.flyTo([-6.32, 106.82], 10, { duration: 0.8 });
+        }
+
+        function focusCity(cityName, btn) {
+            setActiveButton(btn);
+            const item = markers[cityName];
+            if (!item) return;
+            markerGroup.clearLayers();
+            item.marker.addTo(markerGroup);
+            map.flyTo([item.data.lat, item.data.lng], 13, { duration: 0.8 });
+            item.marker.openPopup();
+        }
+    </script>
+</body>
+</html>

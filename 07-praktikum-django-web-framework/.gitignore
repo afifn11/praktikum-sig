@@ -1,0 +1,111 @@
+# ==========================================
+# Python Standards
+# ==========================================
+# Virtual environments (including local project venv)
+webgis/
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage / linter caches
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter Notebook / IPython
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# ==========================================
+# Django Standards
+# ==========================================
+# Local SQLite database
+db.sqlite3
+db.sqlite3-journal
+
+# Local environment & secret files
+.env
+*.env
+.env.*
+local_settings.py
+
+# Logs
+*.log
+
+# Collected static files & user-uploaded media
+# (App-level static/ assets and templates/ remain tracked)
+staticfiles/
+media/
+
+# Translations
+*.mo
+*.pot
+
+# ==========================================
+# IDE & OS Artifacts
+# ==========================================
+# VS Code / Antigravity / JetBrains
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
