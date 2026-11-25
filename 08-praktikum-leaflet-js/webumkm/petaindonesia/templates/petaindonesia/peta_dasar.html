@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 1 - Peta Dasar Leaflet.js</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; height: 100vh; display: flex; flex-direction: column; }
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1.5rem; background: #1e293b; border-bottom: 1px solid #334155;
+        }
+        .navbar-brand { font-weight: 700; font-size: 1.05rem; color: #38bdf8; letter-spacing: 0.02em; }
+        .nav-links { display: flex; gap: 0.5rem; }
+        .nav-links a {
+            text-decoration: none; color: #cbd5e1; padding: 0.45rem 0.9rem;
+            border-radius: 6px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-links a:hover { background: #334155; color: #fff; }
+        .nav-links a.active { background: #0284c7; color: #fff; }
+
+        #map { flex: 1; width: 100%; z-index: 1; }
+
+        /* Custom Marker Icon */
+        .custom-pin {
+            width: 32px; height: 32px; border-radius: 50% 50% 50% 0;
+            background: #0284c7; border: 3px solid #ffffff;
+            transform: rotate(-45deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .custom-pin::after {
+            content: ''; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+        }
+        .custom-pin.pin-emerald { background: #059669; }
+        .custom-pin.pin-amber { background: #d97706; }
+
+        /* Custom CSS Popups */
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: #1e293b; color: #f8fafc; border-radius: 10px;
+            border: 1px solid #38bdf8; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            padding: 0; overflow: hidden;
+        }
+        .custom-popup .leaflet-popup-tip { background: #1e293b; border: 1px solid #38bdf8; }
+        .custom-popup .leaflet-popup-content { margin: 0; min-width: 220px; }
+        .popup-header {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            padding: 0.65rem 0.9rem; font-weight: 700; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .popup-badge {
+            font-size: 0.7rem; background: rgba(255, 255, 255, 0.2);
+            padding: 0.15rem 0.45rem; border-radius: 999px; font-weight: 600;
+        }
+        .popup-body { padding: 0.75rem 0.9rem; font-size: 0.85rem; line-height: 1.5; color: #cbd5e1; }
+        .popup-coords {
+            margin-top: 0.45rem; padding-top: 0.45rem; border-top: 1px solid #334155;
+            font-family: ui-monospace, monospace; font-size: 0.75rem; color: #7dd3fc;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Praktikum 8 &mdash; WebGIS Leaflet.js</div>
+        <div class="nav-links">
+            <a href="/dasar/" class="active">1. Peta Dasar</a>
+            <a href="/provinsi/">2. 34 Provinsi</a>
+            <a href="/petani_jawa/">3. Choropleth Jawa</a>
+        </div>
+    </nav>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // 1. Inisialisasi Peta (Berpusat di Pulau Jawa)
+        const map = L.map('map', {
+            center: [-6.9175, 107.6191],
+            zoom: 7
+        });
+
+        // 2. Basemaps / Tile Providers
+        const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ'
+        });
+
+        const esriTopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+        });
+
+        osm.addTo(map);
+
+        // 3. Helper untuk Custom Icon & Custom Popup HTML
+        function createPinIcon(extraClass = '') {
+            return L.divIcon({
+                className: '',
+                html: `<div class="custom-pin ${extraClass}"></div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+        }
+
+        function buildPopup(title, badge, desc, latlng) {
+            return `
+                <div class="popup-header">
+                    <span>${title}</span>
+                    <span class="popup-badge">${badge}</span>
+                </div>
+                <div class="popup-body">
+                    <div>${desc}</div>
+                    <div class="popup-coords">Lat: ${latlng[0].toFixed(4)}, Lng: ${latlng[1].toFixed(4)}</div>
+                </div>
+            `;
+        }
+
+        const popupOptions = { className: 'custom-popup' };
+
+        // 4. Layer Group: Custom Markers
+        const markerMonas = L.marker([-6.1754, 106.8272], { icon: createPinIcon() })
+            .bindPopup(buildPopup('Monumen Nasional (Monas)', 'Marker', 'Ikon Ibu Kota DKI Jakarta dan pusat landmark nasional.', [-6.1754, 106.8272]), popupOptions);
+
+        const markerBandung = L.marker([-6.9025, 107.6188], { icon: createPinIcon('pin-emerald') })
+            .bindPopup(buildPopup('Gedung Sate Bandung', 'Marker', 'Kantor Gubernur Jawa Barat dengan arsitektur bersejarah.', [-6.9025, 107.6188]), popupOptions);
+
+        const markerJogja = L.marker([-7.7829, 110.3671], { icon: createPinIcon('pin-amber') })
+            .bindPopup(buildPopup('Tugu Yogyakarta', 'Marker', 'Landmark ikonik Daerah Istimewa Yogyakarta.', [-7.7829, 110.3671]), popupOptions);
+
+        const markersLayer = L.layerGroup([markerMonas, markerBandung, markerJogja]).addTo(map);
+
+        // 5. Layer Group: Circles
+        const circleJakarta = L.circle([-6.1754, 106.8272], {
+            color: '#38bdf8',
+            fillColor: '#0284c7',
+            fillOpacity: 0.25,
+            weight: 2,
+            radius: 25000
+        }).bindPopup(buildPopup('Zona Radius Jabodetabek', 'Circle (25 km)', 'Lingkaran cakupan area metropolitan Jakarta dengan radius 25 km.', [-6.1754, 106.8272]), popupOptions);
+
+        const circleBandung = L.circle([-6.9175, 107.6191], {
+            color: '#34d399',
+            fillColor: '#059669',
+            fillOpacity: 0.25,
+            weight: 2,
+            radius: 20000
+        }).bindPopup(buildPopup('Zona Cekungan Bandung', 'Circle (20 km)', 'Lingkaran cakupan wilayah Bandung Raya dengan radius 20 km.', [-6.9175, 107.6191]), popupOptions);
+
+        const circlesLayer = L.layerGroup([circleJakarta, circleBandung]).addTo(map);
+
+        // 6. Layer Group: Polygons
+        const koridorJawa = L.polygon([
+            [-6.1754, 106.8272], // Jakarta
+            [-6.9025, 107.6188], // Bandung
+            [-7.7829, 110.3671], // Yogyakarta
+            [-6.9667, 110.4167]  // Semarang
+        ], {
+            color: '#f59e0b',
+            fillColor: '#fbbf24',
+            fillOpacity: 0.2,
+            weight: 2,
+            dashArray: '6, 4'
+        }).bindPopup(buildPopup('Koridor Segitiga Jawa', 'Polygon', 'Area poligon yang menghubungkan Jakarta, Bandung, Yogyakarta, dan Semarang.', [-6.95, 108.8]), popupOptions);
+
+        const polygonsLayer = L.layerGroup([koridorJawa]).addTo(map);
+
+        // 7. Layer Control
+        const baseMaps = {
+            'OpenStreetMap': osm,
+            'Esri WorldStreetMap': esriStreet,
+            'Esri WorldTopoMap': esriTopo
+        };
+
+        const overlayMaps = {
+            'Custom Markers': markersLayer,
+            'Radius Circles': circlesLayer,
+            'Koridor Polygons': polygonsLayer
+        };
+
+        L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+    </script>
+</body>
+</html>

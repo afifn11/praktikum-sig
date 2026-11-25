@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul 2 - Peta 34 Provinsi Indonesia</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1.5rem; background: #1e293b; border-bottom: 1px solid #334155; flex-shrink: 0;
+        }
+        .navbar-brand { font-weight: 700; font-size: 1.05rem; color: #38bdf8; }
+        .nav-links { display: flex; gap: 0.5rem; }
+        .nav-links a {
+            text-decoration: none; color: #cbd5e1; padding: 0.45rem 0.9rem;
+            border-radius: 6px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-links a:hover { background: #334155; color: #fff; }
+        .nav-links a.active { background: #0284c7; color: #fff; }
+
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+
+        .sidebar {
+            width: 320px; background: #1e293b; border-right: 1px solid #334155;
+            display: flex; flex-direction: column; flex-shrink: 0;
+        }
+        .sidebar-header { padding: 1rem; border-bottom: 1px solid #334155; }
+        .sidebar-title { font-size: 0.95rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.65rem; display: flex; justify-content: space-between; align-items: center; }
+        .badge-count { background: #0284c7; color: #fff; font-size: 0.75rem; padding: 0.15rem 0.55rem; border-radius: 999px; }
+
+        .search-box { display: flex; gap: 0.5rem; }
+        .search-input {
+            flex: 1; padding: 0.55rem 0.75rem; border-radius: 6px;
+            border: 1px solid #475569; background: #0f172a; color: #f8fafc;
+            font-size: 0.875rem; outline: none; transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: #38bdf8; }
+        .btn-reset {
+            padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid #475569;
+            background: #334155; color: #e2e8f0; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+        }
+        .btn-reset:hover { background: #475569; color: #fff; }
+
+        .province-list { flex: 1; overflow-y: auto; padding: 0.5rem; }
+        .province-item {
+            padding: 0.65rem 0.8rem; margin-bottom: 0.35rem; border-radius: 8px;
+            background: #0f172a; border: 1px solid transparent; cursor: pointer;
+            transition: all 0.15s; display: flex; justify-content: space-between; align-items: center;
+        }
+        .province-item:hover { background: #334155; border-color: #475569; }
+        .province-item.active { background: #0c4a6e; border-color: #38bdf8; }
+        .prov-name { font-size: 0.85rem; font-weight: 600; color: #f1f5f9; }
+        .prov-coords { font-size: 0.72rem; color: #94a3b8; margin-top: 0.15rem; font-family: ui-monospace, monospace; }
+        .prov-id { font-size: 0.72rem; color: #38bdf8; font-weight: 700; background: rgba(56, 189, 248, 0.12); padding: 0.2rem 0.45rem; border-radius: 4px; }
+
+        .empty-state { padding: 2rem 1rem; text-align: center; color: #94a3b8; font-size: 0.875rem; }
+
+        #map { flex: 1; height: 100%; z-index: 1; }
+
+        .leaflet-popup-content-wrapper { background: #1e293b; color: #f8fafc; border-radius: 8px; border: 1px solid #38bdf8; }
+        .leaflet-popup-tip { background: #1e293b; }
+        .prov-popup-title { font-weight: 700; font-size: 0.95rem; color: #38bdf8; margin-bottom: 0.35rem; }
+        .prov-popup-meta { font-size: 0.8rem; color: #cbd5e1; line-height: 1.45; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">Praktikum 8 &mdash; WebGIS Leaflet.js</div>
+        <div class="nav-links">
+            <a href="/dasar/">1. Peta Dasar</a>
+            <a href="/provinsi/" class="active">2. 34 Provinsi</a>
+            <a href="/petani_jawa/">3. Choropleth Jawa</a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <span>Daftar Provinsi Indonesia</span>
+                    <span class="badge-count" id="provCount">0</span>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Cari nama provinsi..." />
+                    <button type="button" id="resetBtn" class="btn-reset" title="Reset tampilan peta">Reset</button>
+                </div>
+            </div>
+            <div class="province-list" id="provinceList">
+                <div class="empty-state">Memuat data provinsi...</div>
+            </div>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        const DEFAULT_CENTER = [-2.5489, 118.0149];
+        const DEFAULT_ZOOM = 5;
+
+        const map = L.map('map', {
+            center: DEFAULT_CENTER,
+            zoom: DEFAULT_ZOOM
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const markersLayer = L.layerGroup().addTo(map);
+        const markerById = new Map();
+        let allProvinces = [];
+        let activeProvinceId = null;
+
+        const searchInput = document.getElementById('searchInput');
+        const provinceListEl = document.getElementById('provinceList');
+        const provCountEl = document.getElementById('provCount');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function selectProvince(prov) {
+            activeProvinceId = prov.id;
+            map.flyTo([prov.latitude, prov.longitude], 7, { duration: 0.9 });
+            const marker = markerById.get(prov.id);
+            if (marker) {
+                marker.openPopup();
+            }
+            renderSidebar(filterProvinces(searchInput.value));
+        }
+
+        function filterProvinces(query) {
+            const q = query.trim().toLowerCase();
+            if (!q) return allProvinces;
+            return allProvinces.filter(p =>
+                p.name.toLowerCase().includes(q) || String(p.id).includes(q)
+            );
+        }
+
+        function renderSidebar(provinces) {
+            provCountEl.textContent = provinces.length;
+            if (provinces.length === 0) {
+                provinceListEl.innerHTML = '<div class="empty-state">Provinsi tidak ditemukan.</div>';
+                return;
+            }
+
+            provinceListEl.innerHTML = '';
+            provinces.forEach(prov => {
+                const item = document.createElement('div');
+                item.className = 'province-item' + (prov.id === activeProvinceId ? ' active' : '');
+                item.innerHTML = `
+                    <div>
+                        <div class="prov-name">${prov.name}</div>
+                        <div class="prov-coords">${prov.latitude.toFixed(4)}, ${prov.longitude.toFixed(4)}</div>
+                    </div>
+                    <span class="prov-id">${prov.id}</span>
+                `;
+                item.addEventListener('click', () => selectProvince(prov));
+                provinceListEl.appendChild(item);
+            });
+        }
+
+        function renderMarkers(provinces) {
+            markersLayer.clearLayers();
+            markerById.clear();
+
+            provinces.forEach(prov => {
+                const marker = L.marker([prov.latitude, prov.longitude])
+                    .bindPopup(`
+                        <div class="prov-popup-title">${prov.name}</div>
+                        <div class="prov-popup-meta">
+                            Kode Provinsi: <strong>${prov.id}</strong><br>
+                            Koordinat: ${prov.latitude.toFixed(5)}, ${prov.longitude.toFixed(5)}
+                        </div>
+                    `);
+
+                marker.on('click', () => {
+                    activeProvinceId = prov.id;
+                    renderSidebar(filterProvinces(searchInput.value));
+                });
+
+                marker.addTo(markersLayer);
+                markerById.set(prov.id, marker);
+            });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const filtered = filterProvinces(e.target.value);
+            renderSidebar(filtered);
+            renderMarkers(filtered);
+        });
+
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            activeProvinceId = null;
+            map.flyTo(DEFAULT_CENTER, DEFAULT_ZOOM, { duration: 0.8 });
+            map.closePopup();
+            renderSidebar(allProvinces);
+            renderMarkers(allProvinces);
+        });
+
+        fetch('/static/json/provinces.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Gagal memuat provinces.json');
+                return response.json();
+            })
+            .then(data => {
+                allProvinces = data;
+                renderSidebar(allProvinces);
+                renderMarkers(allProvinces);
+            })
+            .catch(err => {
+                console.error(err);
+                provinceListEl.innerHTML = '<div class="empty-state">Gagal memuat data provinsi.</div>';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+[
+  {
+    "No": 1,
+    "Kode": 31,
+    "Nama Provinsi": "DKI Jakarta",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "660,98",
+    "Populasi (jiwa)": "10.684.900",
+    "Jumlah Petani (unit, ST2023)": 13.416,
+    "Luas Panen Padi (ha)": "498,31"
+  },
+  {
+    "No": 2,
+    "Kode": 32,
+    "Nama Provinsi": "Jawa Barat",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "37.053,33",
+    "Populasi (jiwa)": "50.345.200",
+    "Jumlah Petani (unit, ST2023)": "3.249.879",
+    "Luas Panen Padi (ha)": "1.475.362,09"
+  },
+  {
+    "No": 3,
+    "Kode": 33,
+    "Nama Provinsi": "Jawa Tengah",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "34.347,43",
+    "Populasi (jiwa)": "37.892.300",
+    "Jumlah Petani (unit, ST2023)": "4.218.349",
+    "Luas Panen Padi (ha)": "1.554.777,14"
+  },
+  {
+    "No": 4,
+    "Kode": 34,
+    "Nama Provinsi": "DI Yogyakarta",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "3.170,64",
+    "Populasi (jiwa)": "3.759.500",
+    "Jumlah Petani (unit, ST2023)": 431.133,
+    "Luas Panen Padi (ha)": "96.976,13"
+  },
+  {
+    "No": 5,
+    "Kode": 35,
+    "Nama Provinsi": "Jawa Timur",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "48.036,84",
+    "Populasi (jiwa)": "41.814.500",
+    "Jumlah Petani (unit, ST2023)": "5.676.717",
+    "Luas Panen Padi (ha)": "1.616.985,05"
+  },
+  {
+    "No": 6,
+    "Kode": 36,
+    "Nama Provinsi": "Banten",
+    "Tahun": 2024,
+    "Luas Wilayah (km²)": "9.352,77",
+    "Populasi (jiwa)": "12.431.400",
+    "Jumlah Petani (unit, ST2023)": 609.226,
+    "Luas Panen Padi (ha)": "299.090,79"
+  },
+  {
+    "No": "",
+    "Kode": "",
+    "Nama Provinsi": "Pulau Jawa",
+    "Tahun": "",
+    "Luas Wilayah (km²)": "132.621,99",
+    "Populasi (jiwa)": "156.927.800",
+    "Jumlah Petani (unit, ST2023)": "14.198.720",
+    "Luas Panen Padi (ha)": "5.043.689,51"
+  }
+]

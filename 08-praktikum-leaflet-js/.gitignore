@@ -1,0 +1,17 @@
+# Python Virtual Environment
+webgis/
+
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django Database & Local Files
+db.sqlite3
+*.sqlite3
+
+# IDE & OS Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
